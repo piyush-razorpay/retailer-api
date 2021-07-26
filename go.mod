@@ -1,0 +1,1 @@
+module "github.com/Gandhi24/retailer-api"
