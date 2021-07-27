@@ -41,6 +41,10 @@ func (server *Server) setupRouter() {
 	router.GET("/products", server.getAllProducts)
 	router.GET("/products/:id", server.getProductByID)
 
+	router.POST("/orders", server.createOrder)
+	//router.GET("/orders", server.getAllOrders)
+	//router.GET("/orders/:id", server.getOrderByID)
+
 	server.router = router
 }
 

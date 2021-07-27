@@ -11,7 +11,7 @@ import (
 func CreateProduct(arg *models.CreateProductParams, db *gorm.DB) (models.Product, error) {
 	fmt.Println(arg)
 	newProduct := &models.Product{
-		ID:        generateProductId(),
+		ProductID: generateProductId(),
 		Name:      arg.Name,
 		Quantity:  arg.Quantity,
 		Price:     arg.Price,
@@ -29,7 +29,7 @@ func GetProducts(db *gorm.DB) ([]models.Product, error) {
 
 func GetProductById(id string, db *gorm.DB) (models.Product, error) {
 	var product models.Product
-	result := db.First(&product, "id = ?", id)
+	result := db.First(&product, "product_id = ?", id)
 	return product, result.Error
 }
 

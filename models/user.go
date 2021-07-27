@@ -1,12 +1,12 @@
 package models
 
 type User struct {
-	ID             uint64 `json:"id" gorm:"primary_key;auto_increment""`
-	Username       string `json:"usernaame" gorm:"type:varchar(50)"`
-	FullName       string `json:"fullname" gorm:"type:varchar(50)"`
-	HashedPassword string `json:"hashedpassword" gorm:"type:varchar(1000)"`
-	CreatedAt      string `json:"createdat" gorm:"type:varchar(100)"`
-	Email          string `json:"email" gorm:"type:varchar(50)"`
+	UserID         string `json:"id" gorm:"primary key"`
+	Username       string `json:"username" gorm:"type:varchar(50);not null"`
+	FullName       string `json:"full_name" gorm:"type:varchar(50)"`
+	HashedPassword string `json:"hashed_password" gorm:"type:varchar(1000);not null"`
+	CreatedAt      string `json:"created_at" gorm:"type:varchar(100)"`
+	Email          string `json:"email" gorm:"type:varchar(50);not null"`
 }
 
 type CreateUserParams struct {

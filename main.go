@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
-	db.AutoMigrate(&models2.User{}, &models2.Product{})
+	db.AutoMigrate(&models2.User{}, &models2.Product{}, &models2.Order{})
 
 	server, err := controllers.NewServer(db)
 	if err != nil {
