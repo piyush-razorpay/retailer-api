@@ -33,7 +33,7 @@ func GetProductById(id string, db *gorm.DB) (models.Product, error) {
 	return product, result.Error
 }
 
-func UpdateProductById(id string, db *gorm.DB, arg *models.UpdateProductParams) (models.Product, error) {
+func UpdateProductById(id string, db *gorm.DB, arg *models.ProductParams) (models.Product, error) {
 	var product models.Product
 	fmt.Println(id)
 	result := db.First(&product, "product_id = ?", id)

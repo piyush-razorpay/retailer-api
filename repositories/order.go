@@ -21,6 +21,19 @@ func CreateOrder(arg *models.CreateOrderParams, db *gorm.DB) (models.Order, erro
 	return *newOrder, result.Error
 }
 
+func GetOrders(db *gorm.DB) ([]models.Order, error) {
+	var orders []models.Order
+	result := db.Find(&orders)
+	return orders, result.Error
+}
+
+func GetOrdersByUserID(userId string, db *gorm.DB) ([]models.Order, error) {
+	var orders []models.Order
+	result := db.Where("user_id = ?", userId).Find(&orders)
+	fmt.Println(orders)
+	return orders, result.Error
+}
+
 func generateOrderId() string {
 	guid := xid.New()
 	return "ORD" + guid.String()
