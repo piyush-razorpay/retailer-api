@@ -15,7 +15,7 @@ func CreateOrder(arg *models.CreateOrderParams, db *gorm.DB) (models.Order, erro
 		ProductId: arg.ProductId,
 		UserId:    arg.UserId,
 		Quantity:  arg.Quantity,
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now(),
 	}
 	result := db.Create(&newOrder)
 	return *newOrder, result.Error
@@ -32,6 +32,18 @@ func GetOrdersByUserID(userId string, db *gorm.DB) ([]models.Order, error) {
 	result := db.Where("user_id = ?", userId).Find(&orders)
 	fmt.Println(orders)
 	return orders, result.Error
+}
+
+func GetLastOrderTime(userId string, db *gorm.DB) (time.Time, error) {
+	var order models.Order
+	result := db.
+		Where("user_id = ?", userId).
+		Order("created_at DESC").
+		Limit(1).
+		Find(&order)
+	answer := order.CreatedAt
+	fmt.Println("last order time was: ", answer)
+	return answer, result.Error
 }
 
 func generateOrderId() string {

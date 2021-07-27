@@ -6,6 +6,7 @@ import (
 	"github.com/Gandhi24/retailer-api/repositories"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type createOrderRequest struct {
@@ -57,6 +58,26 @@ func (server *Server) createOrder(ctx *gin.Context) {
 	_, err = repositories.GetProductById(req.ProductId, server.connection)
 	if err != nil {
 		ctx.Set("message", "No product with given productId")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": ctx.Keys["message"],
+		})
+		return
+	}
+
+	lastOrderTime, err := repositories.GetLastOrderTime(req.UserId, server.connection)
+	if err != nil {
+		if err.Error() != "record not found" {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		lastOrderTime = time.Now().Add(-time.Hour * 100)
+	}
+
+	currentTime := time.Now()
+	fmt.Print("current time is: ", currentTime)
+	if currentTime.Before(lastOrderTime.Add(time.Minute * 5)) {
+		ctx.Set("message", "Can't order just yet!")
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
 			"message": ctx.Keys["message"],
