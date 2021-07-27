@@ -40,6 +40,7 @@ func (server *Server) setupRouter() {
 	router.POST("/products", server.createProduct)
 	router.GET("/products", server.getAllProducts)
 	router.GET("/products/:id", server.getProductByID)
+	router.PATCH("/products/:id", server.updateProductByID)
 
 	router.POST("/orders", server.createOrder)
 	//router.GET("/orders", server.getAllOrders)

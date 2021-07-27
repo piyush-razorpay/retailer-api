@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/Gandhi24/retailer-api/models"
 	"github.com/Gandhi24/retailer-api/repositories"
@@ -22,7 +21,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		return
 	}
 
-	arg := models.CreateProductParams{
+	arg := models.ProductParams{
 		Name:     req.Name,
 		Quantity: req.Quantity,
 		Price:    req.Price,
@@ -34,7 +33,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, product)
+	ctx.JSON(http.StatusOK, newProductResponse(product))
 }
 
 func (server *Server) getAllProducts(ctx *gin.Context) {
@@ -50,7 +49,7 @@ func (server *Server) getProductByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	product, err := repositories.GetProductById(id, server.connection)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err.Error() == "record not found" {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -58,4 +57,58 @@ func (server *Server) getProductByID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, product)
+}
+
+type updateProductRequest struct {
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+	Price    int    `json:"price"`
+}
+
+type productResponse struct {
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+	Price    int    `json:"price"`
+}
+
+func newProductResponse(product models.Product) productResponse {
+	fmt.Println("product: ", product)
+	return productResponse{
+		Id:       product.ProductID,
+		Name:     product.Name,
+		Quantity: product.Quantity,
+		Price:    product.Price,
+	}
+}
+
+func (server *Server) updateProductByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var req updateProductRequest
+	fmt.Println("id: ", id)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	fmt.Println(req)
+
+	arg := models.ProductParams{
+		Name:     req.Name,
+		Quantity: req.Quantity,
+		Price:    req.Price,
+	}
+
+	product, err := repositories.UpdateProductById(id, server.connection, &arg)
+	fmt.Println("err: ", err)
+	if err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	rsp := newProductResponse(product)
+	fmt.Println("rsp: ", rsp)
+	ctx.JSON(http.StatusOK, rsp)
 }

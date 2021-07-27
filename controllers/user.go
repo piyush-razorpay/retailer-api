@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/Gandhi24/retailer-api/models"
 	"github.com/Gandhi24/retailer-api/repositories"
@@ -84,7 +83,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 
 	user, err := repositories.GetUser(req.Username, server.connection)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err.Error() == "record not found" {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

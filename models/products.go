@@ -8,7 +8,7 @@ type Product struct {
 	CreatedAt string `json:"created_at" gorm:"type:varchar(100)"`
 }
 
-type CreateProductParams struct {
+type ProductParams struct {
 	Name     string `json:"name"`
 	Quantity int    `json:"quantity"`
 	Price    int    `json:"price"`
