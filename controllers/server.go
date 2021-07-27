@@ -6,6 +6,7 @@ import (
 	"github.com/Gandhi24/retailer-api/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"net/http"
 )
 
 // Server serves HTTP requests for our banking service.
@@ -33,6 +34,10 @@ func NewServer(db *gorm.DB) (*Server, error) {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
+
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "I'm alive! Are you?"})
+	})
 
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
