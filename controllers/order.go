@@ -74,3 +74,42 @@ func (server *Server) createOrder(ctx *gin.Context) {
 	rsp := newOrderResponse(order, "order_placed")
 	ctx.JSON(http.StatusOK, rsp)
 }
+
+func (server *Server) getAllOrders(ctx *gin.Context) {
+	orders, err := repositories.GetOrders(server.connection)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	var responses []orderResponse
+	for _, order := range orders {
+		responses = append(responses, newOrderResponse(order, "order_placed"))
+	}
+	ctx.JSON(http.StatusOK, responses)
+}
+
+func (server *Server) getOrdersByUserID(ctx *gin.Context) {
+	userId := ctx.Param("id")
+	fmt.Println("userID: ", userId)
+	err := repositories.ValidUser(userId, server.connection)
+	fmt.Println(err)
+	if err != nil {
+		ctx.Set("message", "No user with provided userId")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": ctx.Keys["message"],
+		})
+		return
+	}
+
+	orders, err := repositories.GetOrdersByUserID(userId, server.connection)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	var responses []orderResponse
+	for _, order := range orders {
+		responses = append(responses, newOrderResponse(order, "order_placed"))
+	}
+	ctx.JSON(http.StatusOK, responses)
+}

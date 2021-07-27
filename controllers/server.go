@@ -43,8 +43,8 @@ func (server *Server) setupRouter() {
 	router.PATCH("/products/:id", server.updateProductByID)
 
 	router.POST("/orders", server.createOrder)
-	//router.GET("/orders", server.getAllOrders)
-	//router.GET("/orders/:id", server.getOrderByID)
+	router.GET("/orders", server.getAllOrders)
+	router.GET("/orders/:id", server.getOrdersByUserID)
 
 	server.router = router
 }
