@@ -55,13 +55,39 @@ func (server *Server) createOrder(ctx *gin.Context) {
 		return
 	}
 
-	_, err = repositories.GetProductById(req.ProductId, server.connection)
-	if err != nil {
+	product, err1 := repositories.GetProductById(req.ProductId, server.connection)
+	if err1 != nil {
 		ctx.Set("message", "No product with given productId")
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
 			"message": ctx.Keys["message"],
 		})
+		return
+	}
+
+	if product.Quantity < req.Quantity {
+		ctx.Set("message", "Not enough quantity. Check back later!")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": ctx.Keys["message"],
+		})
+		return
+	}
+
+	updateQuantityParams := models.ProductParams{
+		Name:     product.Name,
+		Quantity: product.Quantity - req.Quantity,
+		Price:    product.Price,
+	}
+
+	product, err = repositories.UpdateProductById(req.ProductId, server.connection, &updateQuantityParams)
+	fmt.Println("err: ", err)
+	if err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
@@ -78,8 +104,8 @@ func (server *Server) createOrder(ctx *gin.Context) {
 	fmt.Print("current time is: ", currentTime)
 	if currentTime.Before(lastOrderTime.Add(time.Minute * 5)) {
 		ctx.Set("message", "Can't order just yet!")
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code":    http.StatusBadRequest,
+		ctx.JSON(http.StatusTooEarly, gin.H{
+			"code":    http.StatusTooEarly,
 			"message": ctx.Keys["message"],
 		})
 		return

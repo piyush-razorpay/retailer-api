@@ -16,6 +16,7 @@ func CreateOrder(arg *models.CreateOrderParams, db *gorm.DB) (models.Order, erro
 		UserId:    arg.UserId,
 		Quantity:  arg.Quantity,
 		CreatedAt: time.Now(),
+		Status:    "order placed",
 	}
 	result := db.Create(&newOrder)
 	return *newOrder, result.Error

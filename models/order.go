@@ -8,6 +8,7 @@ type Order struct {
 	ProductId string    `json:"product_id" gorm:"not null"`
 	Quantity  int       `json:"quantity" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at"`
+	Status    string    `json:"status"`
 }
 
 type CreateOrderParams struct {
